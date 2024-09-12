@@ -17,6 +17,7 @@ logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG,
 if os.geteuid() != 0:
     sys.exit("This script must be run as root. Please use 'sudo' or log in as root.")
 
+# Load repositories from config
 REPOS = config.load_repos()
 logging.debug("Loaded repositories: %s", REPOS)
 
@@ -27,7 +28,7 @@ def update_config(repo_name):
         f'  url: "{latest_url}",\n'
         f'  signature_type: "pubkey",\n'
         f'  pubkey: "/usr/share/keys/ssl/certs/ghostbsd.cert",\n'
-        f'  enabled: yes\n'
+              f'  enabled: yes\n'
         f'}}\n'
         f'{repo_name}-base: {{\n'
         f'  url: "{base_url}",\n'
@@ -48,22 +49,27 @@ def validate_config():
     try:
         with open(CONFIG_FILE, 'r') as f:
             config_content = f.read()
+        if not any(repo in config_content for repo in REPOS.keys()):
+            raise ValueError("No known repository found in configuration.")
         if "url:" not in config_content:
             raise ValueError("Invalid configuration: missing URL.")
         logging.info("Configuration file validated.")
+        return True
     except Exception as e:
         logging.error(f"Configuration validation failed: {e}")
-        raise
+        return False
 
 def select_repo(repo_name):
     try:
         logging.debug("Selecting repository: %s", repo_name)
         update_config(repo_name)
-        validate_config()
-        return True, f'{repo_name} selected and configuration updated.'
+        if validate_config():
+            return True, f'{repo_name} selected and configuration updated.'
+        else:
+            return False, "Configuration validation failed."
     except Exception as e:
-        logging.error(f"Error selecting repository: {e}")
-        return False, str(e)
+        logging.error(f"Error selecting repository {repo_name}: {e}")
+        return False, f"Failed to select repository: {e}"
 
 def list_repos():
     print("Available repositories:")
@@ -103,4 +109,4 @@ def main():
         ui.start_gui()
 
 if __name__ == "__main__":
-    main()
+    main() 

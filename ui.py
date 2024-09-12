@@ -1,130 +1,122 @@
 #!/usr/bin/env python3.11
 
+import os
 import gi
+import logging
 gi.require_version('Gtk', '3.0')
 gi.require_version('Pango', '1.0')
-from gi.repository import Gtk, Pango, GLib
+from gi.repository import Gtk, Pango, GLib, Gdk
 import repo_manager
+
+# Constants
+TITLE = "Software Properties Station"
+WINDOW_WIDTH, WINDOW_HEIGHT = 600, 400
+CONFIG_FILE = '/etc/pkg/GhostBSD.conf'
+LOG_FILE = os.path.expanduser('~/software-properties-station.log')
+
+# Setup logging
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class RepoSelector(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Software Properties Station")
+        Gtk.Window.__init__(self, title=TITLE)
         self.set_border_width(10)
-        self.set_default_size(600, 400)
+        self.set_default_size(WINDOW_WIDTH, WINDOW_HEIGHT)
         
-        # Create a main vertical box to hold all elements
+        # Main layout
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(main_vbox)
 
-        # Add a toolbar for common actions
+        # Toolbar
         toolbar = self.create_toolbar()
         main_vbox.pack_start(toolbar, False, False, 0)
 
-        # Create a notebook for tabs
+        # Notebook for tabs
         notebook = Gtk.Notebook()
         notebook.set_tab_pos(Gtk.PositionType.TOP)
         
-        # First tab: Repository Selection
+        # Repository Selection Tab
         repo_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.create_repo_tab(repo_vbox)
         notebook.append_page(repo_vbox, Gtk.Label(label="Repositories"))
 
-        # Second tab: Status and Messages
+        # Status Tab
         status_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.create_status_tab(status_vbox)
         notebook.append_page(status_vbox, Gtk.Label(label="Status"))
 
         main_vbox.pack_start(notebook, True, True, 0)
 
-        # Add Quit button
+        # Quit button
         quit_button = Gtk.Button(label="Quit")
         quit_button.connect("clicked", self.on_quit)
-        quit_button_box = Gtk.Box()
-        quit_button_box.pack_end(quit_button, False, False, 0)
-        main_vbox.pack_end(quit_button_box, False, False, 0)
+        
+        # Create a box to hold the quit button
+        button_box = Gtk.Box(spacing=6)
+        button_box.set_halign(Gtk.Align.END)  # Align to the right
+        button_box.pack_start(quit_button, False, False, 0)
+        
+        main_vbox.pack_end(button_box, False, False, 0)
 
         self.show_all()
 
     def create_toolbar(self):
         toolbar = Gtk.Toolbar()
-#        refresh_button = Gtk.ToolButton.new_from_stock(Gtk.STOCK_REFRESH)
+#        refresh_button = Gtk.ToolButton(icon_name="view-refresh-symbolic")
+#        refresh_button.set_tooltip_text("Refresh Repository List")
 #        refresh_button.connect("clicked", self.refresh_repos)
 #        toolbar.insert(refresh_button, -1)
         return toolbar
 
     def create_repo_tab(self, vbox):
-        # Add a label for instructions
         instruction_label = Gtk.Label(label="Select a package repository")
-        instruction_label.set_alignment(0.0, 0.5)  # Left align the text
+        instruction_label.set_alignment(0.0, 0.5)
         instruction_label.set_hexpand(True)
         instruction_label.set_vexpand(False)
-        vbox.pack_start(instruction_label, False, False, 0)  # Don't expand, just add space for the label
+        vbox.pack_start(instruction_label, False, False, 0)
 
-        repo_scrolled = Gtk.ScrolledWindow()
-        repo_scrolled.set_hexpand(True)
-        repo_scrolled.set_vexpand(True)
-        vbox.pack_start(repo_scrolled, True, True, 0)
-
-        repo_list = Gtk.ListBox()
-        repo_list.set_selection_mode(Gtk.SelectionMode.NONE)
-        repo_list.set_vexpand(True)
-        repo_list.connect("row-activated", self.on_repo_selected)
-        repo_scrolled.add(repo_list)
+        repo_combo = Gtk.ComboBoxText()
+        repo_combo.set_hexpand(True)
         
         for name in repo_manager.REPOS.keys():
-            row = Gtk.ListBoxRow()
-            repo_label = Gtk.Label(label=name)
-            repo_label.set_hexpand(True)
-            repo_label.set_ellipsize(Pango.EllipsizeMode.END)
-            row.add(repo_label)
-            repo_list.add(row)
+            repo_combo.append_text(name)
+        
+        repo_combo.connect("changed", self.on_repo_selected)
+        vbox.pack_start(repo_combo, False, False, 0)
 
     def create_status_tab(self, vbox):
-        status_label = Gtk.Label("Status messages will appear here.")
-        status_label.set_line_wrap(True)
-        status_label.set_hexpand(True)
-        vbox.pack_start(status_label, True, True, 0)
-        self.status_label = status_label
+        self.status_label = Gtk.Label("Status messages will appear here.")
+        self.status_label.set_line_wrap(True)
+        self.status_label.set_hexpand(True)
+        vbox.pack_start(self.status_label, True, True, 0)
 
-    def on_repo_selected(self, listbox, row):
-        repo_name = row.get_child().get_text()
-        dialog = Gtk.MessageDialog(
-            transient_for=self,
-            flags=0,
-            message_type=Gtk.MessageType.QUESTION,
-            buttons=Gtk.ButtonsType.YES_NO,
-            text="Confirm Repository Change",
-        )
-        dialog.format_secondary_text(f"Do you want to change the repository to {repo_name}?")
-        response = dialog.run()
-        dialog.destroy()
+    def on_repo_selected(self, combo):
+        repo_name = combo.get_active_text()
+        if repo_name:
+            dialog = Gtk.MessageDialog(
+                transient_for=self,
+                flags=0,
+                message_type=Gtk.MessageType.QUESTION,
+                buttons=Gtk.ButtonsType.YES_NO,
+                text="Confirm Repository Change",
+            )
+            dialog.format_secondary_text(f"Do you want to change the repository to {repo_name}?")
+            response = dialog.run()
+            dialog.destroy()
 
-        if response == Gtk.ResponseType.YES:
-            self.show_progress("Updating repository configuration...")
-            success, message = repo_manager.select_repo(repo_name)
-            if success:
-                self.show_message(message, Gtk.MessageType.INFO)
-            else:
-                self.show_message(message, Gtk.MessageType.ERROR)
-
-    def show_progress(self, message):
-        self.status_label.set_text(message)
-        GLib.idle_add(self.update_status)
+            if response == Gtk.ResponseType.YES:
+                self.show_message("Updating repository configuration...", Gtk.MessageType.INFO)
+                success, message = repo_manager.select_repo(repo_name)
+                self.show_message(message, Gtk.MessageType.INFO if success else Gtk.MessageType.ERROR)
 
     def show_message(self, message, message_type):
         self.status_label.set_text(message)
-        if message_type == Gtk.MessageType.ERROR:
-            self.status_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0, 0, 1))  # Red color
-        else:
-            self.status_label.override_color(Gtk.StateFlags.NORMAL, None)  # Reset color
+        color = Gdk.RGBA(1, 0, 0, 1) if message_type == Gtk.MessageType.ERROR else None
+        self.status_label.override_color(Gtk.StateFlags.NORMAL, color)
 
     def refresh_repos(self, widget):
-        # Placeholder for refreshing repository list
         self.show_message("Repository list refreshed.", Gtk.MessageType.INFO)
-
-    def update_status(self):
-        # Placeholder for updating status
-        return False  # Stop the idle function
 
     def on_quit(self, widget):
         Gtk.main_quit()
@@ -133,3 +125,6 @@ def start_gui():
     win = RepoSelector()
     win.show_all()
     Gtk.main()
+
+if __name__ == "__main__":
+    repo_manager.main()
