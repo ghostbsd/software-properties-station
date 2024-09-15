@@ -20,18 +20,18 @@ def load_repos():
     }
 ```
 
-### `repo_manager.py`
+### `ghostbsd_repo_manager.py`
 
 - **Core Functionality**: Handles repository operations like selection, updating, and validation.
 - **Functions**:
-  - `update_config(repo_name)`: Updates the configuration file with the selected repository's details.
+  - `select_repo(repo_name)`: Updates the configuration file with the selected repository's details.
+  - `update_config(repo_name)`: Orchestrates the repository selection process.
   - `validate_config()`: Ensures the configuration file meets necessary criteria.
-  - `select_repo(repo_name)`: Orchestrates the repository selection process.
   - `list_repos()`: Outputs available repositories.
   - `show_current_repo()`: Displays the currently active repository.
 
 ```python
-# Example structure for repo_manager.py
+# Example structure for ghostbsd_repo_manager.py
 def update_config(repo_name):
     # Implementation to update configuration file
 
@@ -46,18 +46,16 @@ def validate_config():
 - **GUI Implementation**: Uses GTK 4.0 to create an interactive interface.
 - **Key Components**:
   - **RepoSelector**: The main window class managing UI elements.
-  - `on_repo_selected()`: Handles repository selection events with confirmation dialogs.
+  - `on_repo_selected()`: Handles repository selection events.
   - `show_message()`: Manages UI feedback for operations.
-  - `Gtk.HeaderBar`: Replaces deprecated `Gtk.Toolbar` for window header management.
-  - **Signal Handling**: Uses non-blocking signal-based callbacks for dialog responses.
 
 ```python
-class RepoSelector(Gtk.ApplicationWindow):
-    def __init__(self, app):
+class RepoSelector(Gtk.Window):
+    def __init__(self):
         # Initialization of UI components
 
     def on_repo_selected(self, widget, repo_name):
-        # Handle repository selection logic, confirmation dialog, and response
+        # Handle repository selection logic
 
     def show_message(self, message, message_type):
         # Display messages in the GUI
@@ -66,11 +64,13 @@ class RepoSelector(Gtk.ApplicationWindow):
 ### Main Script (`software-properties-station`)
 
 - **Entry Point**: Initializes the application, ensuring root privileges, and decides between CLI and GUI based on user input.
+- **CLI Mode**: Default mode that lists repositories and allows for selection via the terminal.
+- **GUI Mode**: Invoked via the `--gui` argument, this mode starts the GTK interface for managing repositories.
 
 ```python
 #!/usr/bin/env python3.11
 import sys
-from repo_manager import main
+import ghostbsd_repo_manager  # Renamed from repo_manager to ghostbsd_repo_manager
 
 if __name__ == "__main__":
     main()
@@ -86,11 +86,11 @@ if __name__ == "__main__":
 
 ## Recent Enhancements
 
-- **GTK 4 Migration**: The entire UI has been updated to use GTK 4.0, including changes to window handling, toolbars, and dialog management.
-- **Header Bar**: Replaced deprecated `Gtk.Toolbar` with `Gtk.HeaderBar` for managing window controls.
-- **Signal-Based Dialog Handling**: Moved from blocking dialogs (like `dialog.run()`) to non-blocking signal-based handling for confirmation dialogs, improving responsiveness.
-- **UI Enhancements**: Added a combo box for repository selection and improved error handling within the GUI.
-- **CSS Management**: Adjusted CSS loading to be compatible with GTK 4 using strings instead of byte arrays.
+- **Module Rename**: The repository management module has been renamed from `repo_manager.py` to `ghostbsd_repo_manager.py` to better align with GhostBSD's repository naming conventions.
+- **UI Improvements**: Added a combo box for repository selection, enhancing user experience.
+- **Quit Button Positioning**: Moved the quit button to the bottom right for better UI layout.
+- **Error Handling**: Enhanced error handling in `ghostbsd_repo_manager.py` for more robust operations.
+- **Logging**: Improved logging setup for better debugging capabilities.
 
 ## Future Enhancements
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
 - **Code Style**: Adhere to PEP 8 for Python code style.
 - **Version Control**: Use Git for version control with descriptive commit messages.
-- **Testing**: Implement unit tests for core functionalities, especially in `repo_manager.py`.
+- **Testing**: Implement unit tests for core functionalities, especially in `ghostbsd_repo_manager.py`.
 - **Documentation**: Maintain detailed documentation for each module and function.
 
 ## Deployment
