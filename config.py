@@ -7,4 +7,3 @@ def load_repos():
         "GhostBSD_France": ("https://pkg.fr.ghostbsd.org/unstable/${ABI}/latest", "https://pkg.fr.ghostbsd.org/unstable/${ABI}/base"),
     }
     return repos
-

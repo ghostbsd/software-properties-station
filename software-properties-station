@@ -1,6 +1,56 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
+
 import sys
-from repo_manager import main
+import ghostbsd_repo_manager  # Updated import
+import ui
+
+def main():
+    if len(sys.argv) > 1:
+        # Check if the user passed --gui as an argument
+        if sys.argv[1] == '--gui':
+            # Start in GUI mode
+            print("Starting in GUI mode...")
+            gui_mode()
+        else:
+            print(f"Unknown option: {sys.argv[1]}")
+            print_usage()
+    else:
+        # Default to CLI mode
+        cli_mode()
+
+def cli_mode():
+    """
+    Run the CLI interface to manage repositories.
+    """
+    repos = ghostbsd_repo_manager.list_repos()  # Updated import reference
+    if repos is not None:
+        print("Available repositories:")
+        for repo in repos:
+            print(f"- {repo}")
+
+        selected_repo = input("Select a repository: ")
+        success, message = ghostbsd_repo_manager.update_config(selected_repo)  # Updated import reference
+        if success:
+            print(f"Repository '{selected_repo}' selected successfully.")
+        else:
+            print(f"Error: {message}")
+    else:
+        print("No repositories found.")
+
+def gui_mode():
+    """
+    Start the GUI interface.
+    """
+    ui.start_gui()
+
+def print_usage():
+    """
+    Print usage information for the software-properties-station.
+    """
+    print("Usage:")
+    print("  sudo ./software-properties-station            # Start in CLI mode (default)")
+    print("  sudo ./software-properties-station --gui      # Start in GUI mode")
 
 if __name__ == "__main__":
     main()
+
