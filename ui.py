@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 
 import os
 import gi
@@ -8,7 +8,7 @@ gi.require_version('Gtk', '4.0')
 
 from gi.repository import Gtk, Pango, GLib, Gdk, Gio
 import logging
-import repo_manager
+import ghostbsd_repo_manager  # Updated import
 
 # Constants
 TITLE = "Software Properties Station"
@@ -56,7 +56,7 @@ class RepoSelector(Gtk.ApplicationWindow):
         # Repository Selection Tab
         repo_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.create_repo_tab(repo_vbox)
-        notebook.append_page(repo_vbox, Gtk.Label(label="Repositories"))
+        notebook.append_page(repo_vbox, Gtk.Label(label="GhostBSD Repositories"))
 
         # Status Tab
         status_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -77,6 +77,7 @@ class RepoSelector(Gtk.ApplicationWindow):
         main_vbox.append(button_box)
 
     def create_repo_tab(self, vbox):
+        # Add instruction text above the dropdown menu
         instruction_label = Gtk.Label(label="Select a package repository")
         instruction_label.set_halign(Gtk.Align.START)
         instruction_label.set_hexpand(True)
@@ -84,11 +85,15 @@ class RepoSelector(Gtk.ApplicationWindow):
 
         # Create a Gio.ListStore model from the repository names
         liststore = Gio.ListStore.new(Gtk.StringObject)
-        for repo in repo_manager.REPOS.keys():
+
+        # Add the repository names to the ListStore
+        repositories = ghostbsd_repo_manager.list_repos()  # Updated to reference ghostbsd_repo_manager
+        for repo in repositories:
             liststore.append(Gtk.StringObject.new(repo))
 
         # Create a DropDown using the ListStore
         repo_combo = Gtk.DropDown.new(liststore, None)
+        repo_combo.set_selected(0)  # Optionally set the default selection
         repo_combo.connect("notify::selected", self.on_repo_selected)
 
         vbox.append(repo_combo)
@@ -116,7 +121,7 @@ class RepoSelector(Gtk.ApplicationWindow):
             secondary_label = Gtk.Label(label=f"Do you want to change the repository to {repo_name}?")
             dialog.get_content_area().append(secondary_label)
 
-            # Connect the response to a callback function (remove the extra dialog argument)
+            # Connect the response to a callback function
             dialog.connect("response", self.on_response_dialog, repo_name)
 
             dialog.show()
@@ -126,7 +131,7 @@ class RepoSelector(Gtk.ApplicationWindow):
             dialog.destroy()
 
             # Attempt to select and apply the repository
-            success, message = repo_manager.select_repo(repo_name)
+            success, message = ghostbsd_repo_manager.select_repo(repo_name)  # Updated to reference ghostbsd_repo_manager
 
             # Show a message based on whether the operation succeeded or failed
             if success:
@@ -160,5 +165,5 @@ def start_gui():
     app.run(None)
 
 if __name__ == "__main__":
-    repo_manager.main()
+    ghostbsd_repo_manager.main()  # Updated to reference ghostbsd_repo_manager
 
