@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Software Properties Station** is a dual-interface (GUI and CLI) application designed for GhostBSD users to manage package repositories. Built with Python 3.11 and GTK 3.0 for the GUI, it provides a seamless experience for repository management. The application's architecture is modular, facilitating maintenance and future enhancements.
+**Software Properties Station** is a dual-interface (GUI and CLI) application designed for GhostBSD users to manage package repositories. Built with Python 3.11 and GTK 4.0 for the GUI, it provides a seamless experience for repository management. The application's architecture is modular, facilitating maintenance and future enhancements.
 
 ## Modules
 
@@ -43,19 +43,21 @@ def validate_config():
 
 ### `ui.py`
 
-- **GUI Implementation**: Uses GTK 3.0 to create an interactive interface.
+- **GUI Implementation**: Uses GTK 4.0 to create an interactive interface.
 - **Key Components**:
   - **RepoSelector**: The main window class managing UI elements.
-  - `on_repo_selected()`: Handles repository selection events.
+  - `on_repo_selected()`: Handles repository selection events with confirmation dialogs.
   - `show_message()`: Manages UI feedback for operations.
+  - `Gtk.HeaderBar`: Replaces deprecated `Gtk.Toolbar` for window header management.
+  - **Signal Handling**: Uses non-blocking signal-based callbacks for dialog responses.
 
 ```python
-class RepoSelector(Gtk.Window):
-    def __init__(self):
+class RepoSelector(Gtk.ApplicationWindow):
+    def __init__(self, app):
         # Initialization of UI components
 
     def on_repo_selected(self, widget, repo_name):
-        # Handle repository selection logic
+        # Handle repository selection logic, confirmation dialog, and response
 
     def show_message(self, message, message_type):
         # Display messages in the GUI
@@ -84,10 +86,11 @@ if __name__ == "__main__":
 
 ## Recent Enhancements
 
-- **UI Improvements**: Added a combo box for repository selection, enhancing user experience.
-- **Quit Button Positioning**: Moved the quit button to the bottom right for better UI layout.
-- **Error Handling**: Enhanced error handling in `repo_manager.py` for more robust operations.
-- **Logging**: Improved logging setup for better debugging capabilities.
+- **GTK 4 Migration**: The entire UI has been updated to use GTK 4.0, including changes to window handling, toolbars, and dialog management.
+- **Header Bar**: Replaced deprecated `Gtk.Toolbar` with `Gtk.HeaderBar` for managing window controls.
+- **Signal-Based Dialog Handling**: Moved from blocking dialogs (like `dialog.run()`) to non-blocking signal-based handling for confirmation dialogs, improving responsiveness.
+- **UI Enhancements**: Added a combo box for repository selection and improved error handling within the GUI.
+- **CSS Management**: Adjusted CSS loading to be compatible with GTK 4 using strings instead of byte arrays.
 
 ## Future Enhancements
 
@@ -95,20 +98,17 @@ if __name__ == "__main__":
 - **Advanced Validation**: Expand validation checks for more comprehensive error catching.
 - **Localization**: Add support for multiple languages in the GUI.
 
-
 ## Development Guidelines
 
 - **Code Style**: Adhere to PEP 8 for Python code style.
-- Version Control: Use Git for version control with descriptive commit messages.
-    Testing**: Implement unit tests for core functionalities, especially in repo_manager.py.
+- **Version Control**: Use Git for version control with descriptive commit messages.
+- **Testing**: Implement unit tests for core functionalities, especially in `repo_manager.py`.
 - **Documentation**: Maintain detailed documentation for each module and function.
-
 
 ## Deployment
 
 - **Environment**: Ensure the application runs on GhostBSD with the required Python version and GTK libraries.
 - **Installation**: Provide a straightforward installation script or package for GhostBSD users.
-
 
 ## Security Considerations
 

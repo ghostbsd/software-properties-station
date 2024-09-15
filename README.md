@@ -12,7 +12,7 @@ The software-properties-station app is a simple graphical and command-line appli
 ## Requirements
 
 - Python 3.11
-- GTK 3.0
+- GTK 4.0
 - GhostBSD
 
 ## Installation
@@ -25,7 +25,7 @@ The software-properties-station app is a simple graphical and command-line appli
 
 2. Ensure you have the required dependencies installed:
    ```
-   sudo pkg install gtk3
+   sudo pkg install gtk4
    ```
 
 3. Make the scripts executable:
