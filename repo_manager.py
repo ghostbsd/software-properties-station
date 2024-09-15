@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -28,7 +28,7 @@ def update_config(repo_name):
         f'  url: "{latest_url}",\n'
         f'  signature_type: "pubkey",\n'
         f'  pubkey: "/usr/share/keys/ssl/certs/ghostbsd.cert",\n'
-              f'  enabled: yes\n'
+        f'  enabled: yes\n'
         f'}}\n'
         f'{repo_name}-base: {{\n'
         f'  url: "{base_url}",\n'
@@ -109,4 +109,5 @@ def main():
         ui.start_gui()
 
 if __name__ == "__main__":
-    main() 
+    main()
+

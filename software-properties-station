@@ -1,6 +1,7 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 import sys
 from repo_manager import main
 
 if __name__ == "__main__":
     main()
+
