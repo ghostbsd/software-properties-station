@@ -16,7 +16,7 @@ The `software-properties-station` app is a simple graphical and command-line app
 - GTK 4.0+
 - GhostBSD
 - `PyGObject` (GTK bindings for Python)
-- `py311-pip`
+- `pip`
 
 ## Installation
 
