@@ -1,109 +1,135 @@
-# software-properties-station
+# Software Properties Station
 
-The `software-properties-station` app is a simple graphical and command-line application to manage and select package repositories for GhostBSD. It provides a user-friendly interface for switching between different repository mirrors, making it easy to update and configure the system's package sources.
+## Overview
+Software Properties Station is a GUI and CLI tool for managing package repositories on GhostBSD. It allows users to enable or disable repositories, add custom repositories, and update configurations dynamically.
+
+---
 
 ## Features
 
-- **Graphical Interface**: Easy-to-use GTK-based GUI for selecting package repositories.
-- **Command-line Interface**: Allows repository management directly from the CLI.
-- **Custom Repositories**: Easily add and remove custom repositories through the interface.
-- **Validation**: Ensures the configuration file is valid after updating the repository.
-- **Logging**: Logs actions and errors for troubleshooting.
+1. **Graphical User Interface (GUI)**:
+    - Enable or disable repositories using checkboxes.
+    - Dynamically update the `/usr/local/etc/pkg/repos/GhostBSD.conf` file.
+    - Read-only mode for non-root users.
+
+2. **Command-Line Interface (CLI)**:
+    - View available repositories.
+    - Enable or disable repositories.
+    - Add or remove custom repositories.
+
+3. **Custom Repository Management**:
+    - Add custom repositories with URLs and optional public keys.
+    - Remove existing custom repositories.
+
+4. **Dynamic Configuration Updates**:
+    - Automatically updates the configuration file when repository selections change.
+
+---
 
 ## Requirements
 
-- Python 3.11+
-- GTK 4.0+
-- GhostBSD
-- `PyGObject` (GTK bindings for Python)
-- `pip`
+- **Python**: version 3.6 or later.
+- **GTK 4**: For the GUI.
+- **Root Privileges**: Required for modifying system configuration files.
+
+---
 
 ## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/ghostbsd/software-properties-station.git
-   cd software-properties-station
-   ```
+    ```bash
+    git clone https://github.com/ghostbsd/software-properties-station.git
+    cd software-properties-station
+    ```
 
-2. Install the required dependencies:
-   ```bash
-   sudo pkg install gtk4 pygobject3-common
-   ```
+2. Build and install using the Makefile:
+    ```bash
+    sudo make install
+    ```
 
-3. Install the application using `pip`:
-   ```bash
-   sudo pip install . 
-   ```
+3. (Optional) Run tests to verify the installation:
+    ```bash
+    make test
+    ```
 
-4. Create a directory for the `.log` file:
-   ```bash
-   sudo mkdir /var/log/software-properties-station
-   ```
+---
 
 ## Usage
 
-### Graphical Interface
+### GUI Mode
+To start the application in GUI mode:
+```bash
+sudo software-properties-station --gui
+```
 
-1. To launch the graphical interface, run:
-   ```bash
-   sudo software-properties-station --gui
-   ```
+### CLI Mode
+To start the application in CLI mode:
+```bash
+sudo software-properties-station
+```
 
-2. Select the desired repository from the list of GhostBSD repositories or add a custom repository.
-3. Confirm the selection when prompted.
-4. The application will update the repository URLs and validate the new configuration.
+---
 
-### Command-line Interface
+## Configuration File
+The main configuration file is located at:
+```
+/usr/local/etc/pkg/repos/GhostBSD.conf
+```
 
-1. List available repositories:
-   ```bash
-   sudo software-properties-station --list
-   ```
+### Example Configuration
+The configuration uses the following variables:
+- `${ABI}`: System architecture and version (e.g., "FreeBSD:13:amd64" for 64-bit FreeBSD 13)
 
-2. Show the current repository:
-   ```bash
-   sudo software-properties-station --current
-   ```
-
-3. Select a repository:
-   ```bash
-   sudo software-properties-station <repo_name>
-   ```
-   Replace `<repo_name>` with the name of the repository you want to select, such as `GhostBSD_France`.
-
-### Custom Repositories
-
-1. Add a custom repository by selecting the **Custom Repositories** tab in the GUI.
-2. Fill in the repository name, URL, base URL, and optionally the public key.
-3. Save the repository, and it will appear in the list of available repositories.
-
-## Configuration
-
-The main configuration file is located at `/etc/pkg/GhostBSD.conf`. Custom repositories are stored in the `/etc/pkg/` directory, each with its own `.conf` file.
-
-### Example Configuration:
-
-```ini
+```plaintext
 GhostBSD: {
-  url: "https://pkg.ghostbsd.org/unstable/${ABI}/latest",
+  url: "https://pkg.ghostbsd.org/stable/${ABI}/latest",
   signature_type: "pubkey",
   pubkey: "/usr/share/keys/ssl/certs/ghostbsd.cert",
   enabled: yes
 }
 GhostBSD-base: {
-  url: "https://pkg.ghostbsd.org/unstable/${ABI}/base",
+  url: "https://pkg.ghostbsd.org/stable/${ABI}/base",
   signature_type: "pubkey",
   pubkey: "/usr/share/keys/ssl/certs/ghostbsd.cert",
   enabled: yes
 }
 ```
 
-## Logging
+---
 
-Logs are written to `/var/log/software-properties-station/software-properties-station.log`. Check this file for any errors or information about the application's operations.
+## Development
+
+### Run Tests
+To run the unit tests:
+```bash
+make test
+```
+
+### Contribution Guidelines
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes and add tests.
+4. Submit a pull request.
+
+---
+
+## Known Issues
+- Non-root users cannot modify the configuration file and are limited to read-only mode.
+- Ensure that GTK 4 is properly installed for the GUI to work.
+
+---
 
 ## License
+This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
 
-This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
+---
+
+## Support
+For issues or feature requests, please open an issue on the [GitHub repository](https://github.com/ghostbsd/software-properties-station/issues).
+
+---
+
+## Tests
+
+### Basic Test Script: `tests/tests_basic.py`
 

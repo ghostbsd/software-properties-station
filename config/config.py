@@ -3,8 +3,8 @@
 
 def load_repos():
     repos = {
-        "GhostBSD": ("https://pkg.ghostbsd.org/unstable/${ABI}/latest", "https://pkg.ghostbsd.org/unstable/${ABI}/base"),
-        "GhostBSD_Canada": ("https://pkg.ca.ghostbsd.org/unstable/${ABI}/latest", "https://pkg.ca.ghostbsd.org/unstable/${ABI}/base"),
-        "GhostBSD_France": ("https://pkg.fr.ghostbsd.org/unstable/${ABI}/latest", "https://pkg.fr.ghostbsd.org/unstable/${ABI}/base"),
+        "GhostBSD": ("https://pkg.ghostbsd.org/stable/${ABI}/latest", "https://pkg.ghostbsd.org/stable/${ABI}/base"),
+        "GhostBSD_Canada": ("https://pkg.ca.ghostbsd.org/stable/${ABI}/latest", "https://pkg.ca.ghostbsd.org/stable/${ABI}/base"),
+        "GhostBSD_France": ("https://pkg.fr.ghostbsd.org/stable/${ABI}/latest", "https://pkg.fr.ghostbsd.org/stable/${ABI}/base"),
     }
     return repos

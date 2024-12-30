@@ -1,7 +1,7 @@
 ghostbsd_repos = {
-    "GhostBSD": "https://pkg.ghostbsd.org/unstable/${ABI}/latest",
-    "GhostBSD_Canada": "https://pkg.ca.ghostbsd.org/unstable/${ABI}/latest",
-    "GhostBSD_France": "https://pkg.fr.ghostbsd.org/unstable/${ABI}/latest"
+    "GhostBSD": "https://pkg.ghostbsd.org/stable/${ABI}/latest",
+    "GhostBSD_Canada": "https://pkg.ca.ghostbsd.org/stable/${ABI}/latest",
+    "GhostBSD_France": "https://pkg.fr.ghostbsd.org/stable/${ABI}/latest"
 }
 
 def list_repos():
@@ -30,7 +30,7 @@ GhostBSD-base: {{
 }}
 """
         # Simulating writing to config file (actual path may vary)
-        with open('/etc/pkg/GhostBSD.conf', 'w') as config_file:
+        with open('/usr/local/etc/pkg/repos/GhostBSD.conf', 'w') as config_file:
             config_file.write(config_content)
 
         return True, f"Repository '{repo_name}' updated successfully."
